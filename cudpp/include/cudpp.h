@@ -2,7 +2,7 @@
 // cuDPP -- CUDA Data Parallel Primitives library
 // -------------------------------------------------------------
 // $Revision: 3572$
-// $Date: 2009-07-02 13:39:38 +1000 (Thu, 02 Jul 2009) $
+// $Date: 2009-07-02 04:20:26 +1000 (Thu, 02 Jul 2009) $
 // ------------------------------------------------------------- 
 // This source code is distributed under the terms of license.txt in
 // the root directory of this source distribution.
