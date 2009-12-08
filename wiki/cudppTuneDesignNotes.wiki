@@ -1,3 +1,4 @@
+#labels Phase-Requirements,Phase-Design
 Design notes for cudppTune(), the auto-tuning interface for CUDPP Plans.
 
 = Introduction =
@@ -32,9 +33,6 @@ We have a few options for this:
   # Per-application storage: a file stored in the current working directory when the application is run.  By making this configurable we can make this flexible for the user.
   # No storage: this should be where we start since it will be easier to get things working.
 
-== Storage Format ==
-I (Mark) suspect we need something like [http://www.json.org/ JSON], which is designed as a lightweight data exchange file format.  We could use XML but it is more complex and heavy weight, and it's really designed as a document interchange format more than a data interchange format.
-
 == What we need to store ==
 
 An algorithm tuning is basically an association of a set of parameters to an algorithm identifier.  If we want to be able to store tuning globally and look it up later, then we need to identify an algorithm using:
@@ -44,7 +42,17 @@ An algorithm tuning is basically an association of a set of parameters to an alg
 
 Parameters will vary from algorithm to algorithm, but they include things like CTA SIZE, elements per thread, and various algorithm-specific options.
 
+== Storage Format ==
+I (Mark) suspect we need something like [http://www.json.org/ JSON], which is designed as a lightweight data exchange file format.  We could use XML but it is more complex and heavy weight, and it's really designed as a document interchange format more than a data interchange format.
+
 = Tuning Modularity =
 
+We should endeavor to make it trivial to add tuning to a new algorithm. To do this, we should define an interface that CUDPPPlan subclasses must implement in order to be tunable.  This interface would include methods that allow the tuning system to query:
 
+  * An ID for each tunable parameter
+  * The type of the parameter: bool, uint, int, uint-list, int-list, float, etc.
+  * The valid values for the parameter: obvious for bool, a delimited continuous range for int, uint, float, and a discrete list of valid values for int-list and uint-list.
+  * The priority of the parameter.  So we can control the order in which parameter variations are tried. (Important due to the time limit.)
+
+The interface should also provide methods that enable a plan to store its current configuration to a tuning file / database and also to find and load configuration from such a file/DB.
   
