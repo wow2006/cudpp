@@ -8,6 +8,21 @@ Ideally we should only add a single new function to the public interface:
 CUDPP_RESULT cudppTune(CUDPPHandle plan, CUDPPTuneConfig config);
 }}}
 
+** Some general thoughts: Where should the modeled data be held for a reduction there would only be a few parameters to save, and therefore putting it in the plan could be an option. However, as the method is generalized and extended to more complex input sets, the modeling data will increase quite a bit as well and it might make sense to store it within the tuning structure itself. 
+This would mean that each tuning structure would have to be similar to the cudppPlan concept, with an inherited class for flexible parameters... does it make sense to do it like this? Or just have each Plan carry its own separate tuning data.
+
+The general organization would then be:
+cudppTune() is called:
+-it checks to see if this function has been tuned before and the associated values are stored somewhere (file)
+-if not, it runs the tuner making sure to terminate and make a best guess if it runs past the timer limit.
+
+cudppReduce() is called:
+- it checks to see if the options from CUDPPTuneConfig are set
+- if they are it grabs the modeling data and calculates the correct thread parameters
+- if not it runs default
+
+This the organization we want?
+
 In addition we add the CUDPPTuneConfig struct:
 
 {{{
