@@ -18,6 +18,7 @@ struct CUDPPTuneConfig
 {
    CUDPPTuneOptions options; // or possibly a more flexible method
    float timeLimit;
+   String tuneFilePath;
 };
 }}}
 
