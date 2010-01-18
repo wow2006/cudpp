@@ -35,8 +35,6 @@
 #include <exception>
 #include <stdexcept>
 #include <iostream>
-#include <cstdlib>
-
 
 //! Exception wrapper.
 //! @param Std_Exception Exception out of namespace std for easy typing.

@@ -17,6 +17,13 @@
 #include <math.h>
 #include "sharedmem.h"
 
+
+#ifdef __DEVICE_EMULATION__
+#define __EMUSYNC __syncthreads()
+#else
+#define __EMUSYNC
+#endif
+
 /**
  * @file
  * sort_cta.cu
@@ -31,6 +38,7 @@
 /** @name Radix Sort Functions
 * @{
 */
+
 
 typedef unsigned int uint;
 
@@ -89,7 +97,7 @@ __device__ uint floatUnflip(uint f)
  * @param[in,out] sData
 **/
 template<class T, int maxlevel>
-__device__ T scanwarp(T val, volatile T* sData)
+__device__ T scanwarp(T val, T* sData)
 {
     // The following is the same as 2 * WARP_SIZE * warpId + threadInWarp = 
     // 64*(threadIdx.x >> 5) + (threadIdx.x & (WARP_SIZE - 1))

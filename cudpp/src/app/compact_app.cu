@@ -57,17 +57,17 @@
   *
   */
 void calculatCompactLaunchParams(const unsigned int numElements,
-                 unsigned int       &numThreads, 
-                 unsigned int       &numBlocks,
-                 unsigned int       &numEltsPerBlock)
+								 unsigned int       &numThreads, 
+								 unsigned int       &numBlocks,
+								 unsigned int       &numEltsPerBlock)
 {
     numBlocks = 
         max(1, (int)ceil((float)numElements / 
-                         ((float)SCAN_ELTS_PER_THREAD * SCAN_CTA_SIZE)));
+                         ((float)SCAN_ELTS_PER_THREAD * CTA_SIZE)));
 
     if (numBlocks > 1)
     {  
-        numThreads = SCAN_CTA_SIZE;
+        numThreads = CTA_SIZE;
     }    
     else
     {

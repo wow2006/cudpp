@@ -1,4 +1,3 @@
-
 // ***************************************************************
 //  cuDPP -- CUDA Data Parallel Primitives library
 //  -------------------------------------------------------------
@@ -13,8 +12,6 @@
 
 #ifndef __SPARSE_HPP__
 #define __SPARSE_HPP__
-
-#include <cstdlib>
 
 /** Matrix entry in MatrixMarket format */
 class MMEntry

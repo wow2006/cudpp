@@ -29,7 +29,6 @@
 #include "cudpp_radixsort.h"
 #include "cudpp_scan.h"
 #include "kernel/radixsort_kernel.cu"
-#include "cudpp_maximal_launch.h"
 
 #include <cutil.h>
 #include <cstdlib>
@@ -85,7 +84,7 @@ void radixSortStep(uint *keys,
         // on GT200, resulting in better scheduling and lower run times
         if (startbit > 0)
         {
-            emptyKernel<<<plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_EK], SORT_CTA_SIZE>>>();
+            emptyKernel<<<numCTAs(emptyKernel), SORT_CTA_SIZE>>>();
         }
     }
 
@@ -95,8 +94,8 @@ void radixSortStep(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocks = flip? plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_T_T_T] : 
-                               plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_T_F_T];
+                blocks = flip? numCTAs(radixSortBlocks<4, 0, true, true, true>) : 
+                               numCTAs(radixSortBlocks<4, 0, true, false, true>);
             }
 
             radixSortBlocks<nbits, startbit, true, flip, true>
@@ -116,8 +115,8 @@ void radixSortStep(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocks = flip ? plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_F_T_T] : 
-                                plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_F_F_T];
+                blocks = flip ? numCTAs(radixSortBlocks<4, 0, false, true, true>) : 
+                                numCTAs(radixSortBlocks<4, 0, false, false, true>);
             }
 
             radixSortBlocks<nbits, startbit, false, flip, true>
@@ -140,7 +139,7 @@ void radixSortStep(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocksFind = plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_FRO_0_T_T];
+                blocksFind = numCTAs(findRadixOffsets<0, true, true>);
             }
             findRadixOffsets<startbit, true, true>
                 <<<blocksFind, SORT_CTA_SIZE, 3 * SORT_CTA_SIZE * sizeof(uint)>>>
@@ -159,7 +158,7 @@ void radixSortStep(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocksFind = plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_FRO_0_F_T];
+                blocksFind = numCTAs(findRadixOffsets<0, false, true>);
             }
             findRadixOffsets<startbit, false, true>
                 <<<blocksFind, SORT_CTA_SIZE, 3 * SORT_CTA_SIZE * sizeof(uint)>>>
@@ -185,8 +184,8 @@ void radixSortStep(uint *keys,
             {
                 if (numElements >= threshold) 
                 {
-                    blocksReorder = unflip ? plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_T_T_T] :
-                                             plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_T_F_T];
+                    blocksReorder = unflip ? numCTAs(reorderData<0, true, true, true, true>) :
+                                             numCTAs(reorderData<0, true, true, false, true>);
                 }
                 reorderData<startbit, true, true, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -207,8 +206,8 @@ void radixSortStep(uint *keys,
             {
                 if (numElements >= threshold) 
                 {
-                    blocksReorder = unflip ? plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_F_T_T] :
-                                             plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_F_F_T];
+                    blocksReorder = unflip ? numCTAs(reorderData<0, true, false, true, true>) :
+                                             numCTAs(reorderData<0, true, false, false, true>);
                 }
                 reorderData<startbit, true, false, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -233,8 +232,8 @@ void radixSortStep(uint *keys,
                 if (numElements >= threshold) 
                 {
                     blocksReorder = unflip ? 
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_T_T_T] :
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_T_F_T];
+                        numCTAs(reorderData<0, false, true, true, true>) :
+                        numCTAs(reorderData<0, false, true, false, true>);
                 }
                 reorderData<startbit, false, true, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -256,8 +255,8 @@ void radixSortStep(uint *keys,
                 if (numElements >= threshold) 
                 {
                     blocksReorder = unflip ?
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_F_T_T] :
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_F_F_T];
+                        numCTAs(reorderData<0, false, false, true, true>) :
+                        numCTAs(reorderData<0, false, false, false, true>);
                 }
                 reorderData<startbit, false, false, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -488,8 +487,8 @@ void radixSortStepKeysOnly(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocks = flip ? plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_T_T_T] : 
-                                plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_T_F_T];
+                blocks = flip ? numCTAs(radixSortBlocksKeysOnly<4, 0, true, true, true>) : 
+                                numCTAs(radixSortBlocksKeysOnly<4, 0, true, false, true>);
             }
 
             radixSortBlocksKeysOnly<nbits, startbit, true, flip, true>
@@ -507,8 +506,8 @@ void radixSortStepKeysOnly(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocks = flip ? plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_F_T_T] : 
-                                plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_F_F_T];
+                blocks = flip ? numCTAs(radixSortBlocksKeysOnly<4, 0, false, true, true>) : 
+                                numCTAs(radixSortBlocksKeysOnly<4, 0, false, false, true>);
             }
 
             radixSortBlocksKeysOnly<nbits, startbit, false, flip, true>
@@ -528,7 +527,7 @@ void radixSortStepKeysOnly(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocksFind = plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_FRO_0_T_T];
+                blocksFind = numCTAs(findRadixOffsets<0, true, true>);
             }
             findRadixOffsets<startbit, true, true>
                 <<<blocksFind, SORT_CTA_SIZE, 3 * SORT_CTA_SIZE * sizeof(uint)>>>
@@ -545,7 +544,7 @@ void radixSortStepKeysOnly(uint *keys,
         {
             if (numElements >= threshold) 
             {
-                blocksFind = plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_FRO_0_F_T];
+                blocksFind = numCTAs(findRadixOffsets<0, false, true>);
             }
             findRadixOffsets<startbit, false, true>
                 <<<blocksFind, SORT_CTA_SIZE, 3 * SORT_CTA_SIZE * sizeof(uint)>>>
@@ -569,8 +568,8 @@ void radixSortStepKeysOnly(uint *keys,
                 if (numElements >= threshold) 
                 {
                     blocksReorder = unflip ? 
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_T_T_T] : 
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_T_F_T];
+                        numCTAs(reorderDataKeysOnly<0, true, true, true, true>) : 
+                        numCTAs(reorderDataKeysOnly<0, true, true, false, true>);
                 }
                 reorderDataKeysOnly<startbit, true, true, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -590,8 +589,8 @@ void radixSortStepKeysOnly(uint *keys,
                 if (numElements >= threshold) 
                 {
                     blocksReorder = unflip ?
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_F_T_T] :
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_F_F_T];
+                        numCTAs(reorderDataKeysOnly<0, true, false, true, true>) :
+                        numCTAs(reorderDataKeysOnly<0, true, false, false, true>);
                 }
                 reorderDataKeysOnly<startbit, true, false, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -614,8 +613,8 @@ void radixSortStepKeysOnly(uint *keys,
                 if (numElements >= threshold) 
                 {
                     blocksReorder = unflip ? 
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_T_T_T] :
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_T_F_T];
+                        numCTAs(reorderDataKeysOnly<0, false, true, true, true>) :
+                        numCTAs(reorderDataKeysOnly<0, false, true, false, true>);
                 }
                 reorderDataKeysOnly<startbit, false, true, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -635,8 +634,8 @@ void radixSortStepKeysOnly(uint *keys,
                 if (numElements >= threshold) 
                 {
                     blocksReorder = unflip ?
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_F_T_T] :
-                        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_F_F_T];
+                        numCTAs(reorderDataKeysOnly<0, false, false, true, true>) :
+                        numCTAs(reorderDataKeysOnly<0, false, false, false, true>);
                 }
                 reorderDataKeysOnly<startbit, false, false, unflip, true>
                     <<<blocksReorder, SORT_CTA_SIZE>>>
@@ -703,8 +702,8 @@ void radixSortSingleBlockKeysOnly(uint *keys,
 extern "C"
 void radixSortKeysOnly(uint *keys,
                        const CUDPPRadixSortPlan *plan, 
-                       size_t numElements,
                        bool flipBits, 
+                       size_t numElements,
                        int keyBits)
 {
 
@@ -787,11 +786,11 @@ void radixSortKeysOnly(uint *keys,
 extern "C"
 void radixSortFloatKeysOnly(float *keys, 
                             const CUDPPRadixSortPlan *plan,                        
-                            size_t numElements,
                             bool  negativeKeys,
+                            size_t numElements,
                             int keyBits)
 {
-    radixSortKeysOnly((uint*)keys, plan, numElements, negativeKeys, keyBits);
+    radixSortKeysOnly((uint*)keys, plan, negativeKeys, numElements, keyBits);
 }
 
 extern "C"
@@ -822,39 +821,38 @@ void initDeviceParameters(CUDPPRadixSortPlan *plan)
         // Must pass in the dynamic shared memory used by each kernel, since the runtime doesn't know it
         // Note we only insert the "loop" version of the kernels (the one with the last template param = true)
         // Because those are the only ones that require persistent CTAs that maximally fill the device.
+        computeNumCTAs(radixSortBlocks<4, 0, false, false, true>,         4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocks<4, 0, false, true,  true>,         4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocks<4, 0, true, false,  true>,         4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocks<4, 0, true, true,  true>,          4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
         
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_F_F_T] = maxBlocks(radixSortBlocks<4, 0, false, false, true>, 4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_F_T_T] = maxBlocks(radixSortBlocks<4, 0, false, true,  true>, 4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_T_F_T] = maxBlocks(radixSortBlocks<4, 0, true,  false, true>, 4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSB_4_0_T_T_T] = maxBlocks(radixSortBlocks<4, 0, true,  true,  true>, 4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_F_F_T] = maxBlocks(radixSortBlocksKeysOnly<4, 0, false, false, true>, 4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_F_T_T] = maxBlocks(radixSortBlocksKeysOnly<4, 0, false, true, true>,  4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_T_F_T] = maxBlocks(radixSortBlocksKeysOnly<4, 0, true, false, true>,  4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RSBKO_4_0_T_T_T] = maxBlocks(radixSortBlocksKeysOnly<4, 0, true, true, true>,   4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocksKeysOnly<4, 0, false, false, true>, 4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocksKeysOnly<4, 0, false, true, true>,  4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocksKeysOnly<4, 0, true, false, true>,  4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(radixSortBlocksKeysOnly<4, 0, true, true, true>,   4 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
 
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_FRO_0_F_T] = maxBlocks(findRadixOffsets<0, false, true>, 3 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_FRO_0_T_T] = maxBlocks(findRadixOffsets<0, true, true>,  3 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(findRadixOffsets<0, false, true>,                  3 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
+        computeNumCTAs(findRadixOffsets<0, true, true>,                   3 * SORT_CTA_SIZE * sizeof(uint), SORT_CTA_SIZE);
 
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_F_F_T] = maxBlocks(reorderData<0, false, false, false, true>, 0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_F_T_T] = maxBlocks(reorderData<0, false, false, true, true>,  0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_T_F_T] = maxBlocks(reorderData<0, false, true, false, true>,  0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_F_T_T_T] = maxBlocks(reorderData<0, false, true, true, true>,   0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_F_F_T] = maxBlocks(reorderData<0, true, false, false, true>,  0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_F_T_T] = maxBlocks(reorderData<0, true, false, true, true>,   0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_T_F_T] = maxBlocks(reorderData<0, true, true, false, true>,   0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RD_0_T_T_T_T] = maxBlocks(reorderData<0, true, true, true, true>,    0, SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, false, false, false, true>,         0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, false, false, true, true>,          0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, false, true, false, true>,          0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, false, true, true, true>,           0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, true, false, false, true>,          0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, true, false, true, true>,           0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, true, true, false, true>,           0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderData<0, true, true, true, true>,            0,                                SORT_CTA_SIZE);
 
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_F_F_T] = maxBlocks(reorderDataKeysOnly<0, false, false, false, true>, 0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_F_T_T] = maxBlocks(reorderDataKeysOnly<0, false, false, true, true>,  0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_T_F_T] = maxBlocks(reorderDataKeysOnly<0, false, true, false, true>,  0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_F_T_T_T] = maxBlocks(reorderDataKeysOnly<0, false, true, true, true>,   0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_F_F_T] = maxBlocks(reorderDataKeysOnly<0, true, false, false, true>,  0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_F_T_T] = maxBlocks(reorderDataKeysOnly<0, true, false, true, true>,   0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_T_F_T] = maxBlocks(reorderDataKeysOnly<0, true, true, false, true>,   0, SORT_CTA_SIZE);
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_RDKO_0_T_T_T_T] = maxBlocks(reorderDataKeysOnly<0, true, true, true, true>,    0, SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, false, false, false, true>, 0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, false, false, true, true>,  0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, false, true, false, true>,  0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, false, true, true, true>,   0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, true, false, false, true>,  0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, true, false, true, true>,   0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, true, true, false, true>,   0,                                SORT_CTA_SIZE);
+        computeNumCTAs(reorderDataKeysOnly<0, true, true, true, true>,    0,                                SORT_CTA_SIZE);
                
-        plan->m_numCTAs[CUDPPRadixSortPlan::KERNEL_EK] = maxBlocks(emptyKernel, 0, SORT_CTA_SIZE);
+        computeNumCTAs(emptyKernel,                                       0,                                SORT_CTA_SIZE);
     }
 }
 
@@ -956,12 +954,12 @@ void cudppRadixSortDispatch(void  *keys,
         switch(plan->m_config.datatype)
         {
         case CUDPP_UINT:
-            radixSortKeysOnly((uint*)keys, plan, 
-                              numElements, false, keyBits);
+            radixSortKeysOnly((uint*)keys, plan, false, 
+                              numElements, keyBits);
             break;
         case CUDPP_FLOAT:
-            radixSortFloatKeysOnly((float*)keys, plan, 
-                                    numElements, true, keyBits);
+            radixSortFloatKeysOnly((float*)keys, plan, true,
+                                    numElements, keyBits);
         }
     }
     else

@@ -14,7 +14,6 @@
 #include <math.h>
 #include "cudpp.h"
 #include "cutil.h"
-#include <GL/glut.h>
 
 #ifdef _WIN32
 #  define WINDOWS_LEAN_AND_MEAN
@@ -31,11 +30,10 @@ CUDPPConfiguration config = { CUDPP_SCAN,
                               CUDPP_ADD, 
                               CUDPP_FLOAT, 
                               CUDPP_OPTION_FORWARD | CUDPP_OPTION_EXCLUSIVE };
-CUDPPHandle theCudpp;
 CUDPPHandle scanPlan;
 
 float *SATs[2][3];
-cudaEvent_t timerStart, timerStop;
+unsigned int satTimer[3];
 
 extern "C"
 __host__ void initialize(int width, int height)
@@ -50,18 +48,15 @@ __host__ void initialize(int width, int height)
     CUDA_SAFE_CALL( cudaMallocPitch( (void**) &SATs[1][2], &d_satPitch, dpitch, height));
 
     d_satPitchInElements = d_satPitch / sizeof(float);
-
-    // Initialize CUDPP
-    cudppCreate(&theCudpp);
     
-    if (CUDPP_SUCCESS != cudppPlan(theCudpp, &scanPlan, config, width, height, d_satPitchInElements))
+    if (CUDPP_SUCCESS != cudppPlan(&scanPlan, config, width, height, d_satPitchInElements))
     {
         printf("Error creating CUDPPPlan.\n");
     }
 
-    CUDA_SAFE_CALL( cudaEventCreate(&timerStart) );
-    CUDA_SAFE_CALL( cudaEventCreate(&timerStop) );
-    
+    CUT_SAFE_CALL(cutCreateTimer(&(satTimer[0])));
+    CUT_SAFE_CALL(cutCreateTimer(&(satTimer[1])));
+    CUT_SAFE_CALL(cutCreateTimer(&(satTimer[2])));
 }
 
 extern "C"
@@ -69,17 +64,8 @@ __host__ void finalize()
 {
     if (CUDPP_SUCCESS != cudppDestroyPlan(scanPlan))
     {
-        printf("Error destroying CUDPPPlan.\n");
+        printf("Error creating CUDPPPlan.\n");
     }
-
-    // shut down CUDPP
-    if (CUDPP_SUCCESS != cudppDestroy(theCudpp))
-    {
-        printf("Error destroying CUDPP.\n");
-    }
-
-    CUDA_SAFE_CALL( cudaEventDestroy(timerStart) );
-    CUDA_SAFE_CALL( cudaEventDestroy(timerStop) );
 }
 
 __global__ 
@@ -202,8 +188,11 @@ void process( int pbo_in, int pbo_out, int width, int height, int radius)
     dim3 block(16, 16, 1);
     dim3 grid(width / block.x, height / block.y, 1);
 
-    CUDA_SAFE_CALL( cudaEventRecord(timerStart) );    
+    cutResetTimer(satTimer[0]);
+    cutResetTimer(satTimer[1]);
+    cutResetTimer(satTimer[2]);
 
+    CUT_SAFE_CALL(cutStartTimer(satTimer[0]));
     deinterleaveRGBA8toFloat32<<<grid, block, 0>>>(SATs[0][0], 
                                                    SATs[0][1], 
                                                    SATs[0][2], 
@@ -211,7 +200,9 @@ void process( int pbo_in, int pbo_out, int width, int height, int radius)
                                                    d_satPitchInElements,
                                                    width, height);
     CUT_CHECK_ERROR("de-interleave");
+    CUT_SAFE_CALL(cutStopTimer(satTimer[0]));
 
+    CUT_SAFE_CALL(cutStartTimer(satTimer[1]));
     // scan rows
     cudppMultiScan(scanPlan, SATs[1][0], SATs[0][0], width, height);
     CUT_CHECK_ERROR("scan 1");
@@ -219,44 +210,47 @@ void process( int pbo_in, int pbo_out, int width, int height, int radius)
     CUT_CHECK_ERROR("scan 2");
     cudppMultiScan(scanPlan, SATs[1][2], SATs[0][2], width, height);
     CUT_CHECK_ERROR("scan 3");
+    CUT_SAFE_CALL(cutStopTimer(satTimer[1]));
 
-    
 
+    CUT_SAFE_CALL(cutStartTimer(satTimer[2]));
     // transpose so columns become rows
     transpose<float, 16, 16><<<grid, block, 0>>>
         (SATs[0][0], SATs[0][1], SATs[0][2], 
          SATs[1][0], SATs[1][1], SATs[1][2], d_satPitchInElements, width, height);
     CUT_CHECK_ERROR("transpose");
+    CUT_SAFE_CALL(cutStopTimer(satTimer[2]));
 
+    CUT_SAFE_CALL(cutStartTimer(satTimer[1]));
     // scan columns
     cudppMultiScan(scanPlan, SATs[1][0], SATs[0][0], width, height);
-
     CUT_CHECK_ERROR("scan 4");
     cudppMultiScan(scanPlan, SATs[1][1], SATs[0][1], width, height);
     CUT_CHECK_ERROR("scan 5");
     cudppMultiScan(scanPlan, SATs[1][2], SATs[0][2], width, height);
-    CUT_CHECK_ERROR("scan 6"); 
+    CUT_CHECK_ERROR("scan 6");
+    CUT_SAFE_CALL(cutStopTimer(satTimer[1]));
     
+    CUT_SAFE_CALL(cutStartTimer(satTimer[0]));
     interleaveFloat32toRGBAfp32<<<grid, block, 0>>>((float4*)out_data, 
                                                     SATs[1][0], 
                                                     SATs[1][1], 
                                                     SATs[1][2], 
                                                     d_satPitchInElements,
                                                     width, height);
-
-    CUDA_SAFE_CALL(cudaEventRecord(timerStop));
-
     CUT_CHECK_ERROR("interleave");
+    CUT_SAFE_CALL(cutStopTimer(satTimer[0]));
+
 
     CUDA_SAFE_CALL(cudaGLUnmapBufferObject( pbo_in));
     CUDA_SAFE_CALL(cudaGLUnmapBufferObject( pbo_out));
 
-    float ms;
-    CUDA_SAFE_CALL( cudaEventSynchronize(timerStop) );
-    CUDA_SAFE_CALL( cudaEventElapsedTime(&ms, timerStart, timerStop) );
-    char msg[100];
-    sprintf(msg, "CUDPP Summed-Area Table: %0.3f ms to create SAT", ms);
-    glutSetWindowTitle(msg);
+    //printf("SAT: %0.2f ms\n", cutGetTimerValue(satTimer[0]));
+    /*printf("Total: %0.2f ms | (de)Interleave: %0.2f ms | Multiscan: %0.2f ms | Transpose: %0.2f ms\n",
+           cutGetTimerValue(satTimer[0])+cutGetTimerValue(satTimer[1])+cutGetTimerValue(satTimer[2]),
+           cutGetTimerValue(satTimer[0]), cutGetTimerValue(satTimer[1]), cutGetTimerValue(satTimer[2]));
+*/
+
 }
 
 extern "C"
