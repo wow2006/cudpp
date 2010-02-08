@@ -111,6 +111,21 @@ CUDPPResult cudppPlan(const CUDPPHandle  cudppHandle,
             plan = new CUDPPRandPlan(mgr, config, numElements);
             break;
         }
+    case (CUDPP_TRIDIAGONAL_CR):
+        {
+            plan = new CUDPPTridiagonalPlan(mgr, config);
+            break;
+        }
+    case (CUDPP_TRIDIAGONAL_PCR):
+        {
+            plan = new CUDPPTridiagonalPlan(mgr, config);
+            break;
+        }
+    case (CUDPP_TRIDIAGONAL_CRPCR):
+        {
+            plan = new CUDPPTridiagonalPlan(mgr, config);
+            break;
+        }
     case CUDPP_REDUCE:
         {
             plan = new CUDPPReducePlan(mgr, config, numElements);
@@ -172,6 +187,21 @@ CUDPPResult cudppDestroyPlan(CUDPPHandle planHandle)
     case CUDPP_RAND_MD5:
         {
             delete static_cast<CUDPPRandPlan*>(plan);
+            break;
+        }
+    case (CUDPP_TRIDIAGONAL_CR):
+        {
+            delete static_cast<CUDPPTridiagonalPlan*>(plan);
+            break;
+        }
+    case (CUDPP_TRIDIAGONAL_PCR):
+        {
+            delete static_cast<CUDPPTridiagonalPlan*>(plan);
+            break;
+        }
+    case (CUDPP_TRIDIAGONAL_CRPCR):
+        {
+            delete static_cast<CUDPPTridiagonalPlan*>(plan);
             break;
         }
     case CUDPP_REDUCE:
@@ -529,3 +559,8 @@ CUDPPRandPlan::CUDPPRandPlan(CUDPPManager *mgr, CUDPPConfiguration config, size_
     
 }
 
+CUDPPTridiagonalPlan::CUDPPTridiagonalPlan(CUDPPManager *mgr, CUDPPConfiguration config) 
+ : CUDPPPlan(mgr, config, 0, 0, 0)
+{
+    
+}

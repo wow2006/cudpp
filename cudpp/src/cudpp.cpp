@@ -49,6 +49,7 @@
 #include "cudpp_radixsort.h"
 #include "cudpp_rand.h"
 #include "cudpp_reduce.h"
+#include "cudpp_tridiagonal.h"
 
 /**
  * @brief Performs a scan operation of numElements on its input in
@@ -470,6 +471,20 @@ CUDPPResult cudppRandSeed(const CUDPPHandle planHandle,
 
     return CUDPP_SUCCESS;
 }//end cudppRandSeed
+
+CUDPP_DLL
+CUDPPResult cudppTridiagonal(CUDPPHandle planHandle, void *a, void *b, void *c, void *d, void *x, int system_size, int num_systems)
+{
+	CUDPPTridiagonalPlan * plan = (CUDPPTridiagonalPlan *) getPlanPtrFromHandle<CUDPPTridiagonalPlan>(planHandle);
+    if(plan != NULL)
+    {
+        //dispatch the tridiagonal solver here
+        cudppTridiagonalDispatch(a, b, c, d, x, system_size, num_systems, plan);
+        return CUDPP_SUCCESS;
+    }
+    else
+        return CUDPP_ERROR_UNKNOWN; //! @todo Return more specific errors
+}
 
 /** @} */ // end Algorithm Interface
 /** @} */ // end of publicInterface group

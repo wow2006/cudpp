@@ -389,6 +389,9 @@ enum CUDPPAlgorithm
     CUDPP_SORT_RADIX,        //!< Radix sort
     CUDPP_SPMVMULT,          //!< Sparse matrix-dense vector multiplication
     CUDPP_RAND_MD5,          //!< PseudoRandom Number Generator using MD5 hash algorithm
+    CUDPP_TRIDIAGONAL_CR,    //!< Tridiagonal solver using cyclic reduction algorithm
+	CUDPP_TRIDIAGONAL_PCR,   //!< Tridiagonal solver using parallel cyclic reduction algorithm
+    CUDPP_TRIDIAGONAL_CRPCR, //!< Tridiagonal solver using hybrid CR-PCR algorithm
     CUDPP_ALGORITHM_INVALID, //!< Placeholder at end of enum
 };
 
@@ -522,6 +525,17 @@ CUDPPResult cudppRand(const CUDPPHandle planHandle,
 CUDPP_DLL
 CUDPPResult cudppRandSeed(const CUDPPHandle planHandle, 
                           unsigned int      seed);
+
+// tridiagonal solver algorithms
+CUDPP_DLL
+CUDPPResult cudppTridiagonal(CUDPPHandle planHandle, 
+							 void *a, 
+							 void *b, 
+							 void *c, 
+							 void *d, 
+							 void *x, 
+							 int system_size, 
+							 int num_systems);
 
 #ifdef __cplusplus
 }
