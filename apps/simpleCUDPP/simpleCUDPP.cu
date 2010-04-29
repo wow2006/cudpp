@@ -73,10 +73,6 @@ runTest( int argc, char** argv)
     float* d_odata;
     CUDA_SAFE_CALL( cudaMalloc( (void**) &d_odata, memSize));
 
-    // Initialize the CUDPP Library
-    CUDPPHandle theCudpp;
-    cudppCreate(&theCudpp);
-
     CUDPPConfiguration config;
     config.op = CUDPP_ADD;
     config.datatype = CUDPP_FLOAT;
@@ -84,7 +80,7 @@ runTest( int argc, char** argv)
     config.options = CUDPP_OPTION_FORWARD | CUDPP_OPTION_EXCLUSIVE;
     
     CUDPPHandle scanplan = 0;
-    CUDPPResult result = cudppPlan(theCudpp, &scanplan, config, numElements, 1, 0);  
+    CUDPPResult result = cudppPlan(&scanplan, config, numElements, 1, 0);  
 
     if (CUDPP_SUCCESS != result)
     {
@@ -114,9 +110,6 @@ runTest( int argc, char** argv)
         printf("Error destroying CUDPPPlan\n");
         exit(-1);
     }
-
-    // shut down the CUDPP library
-    cudppDestroy(theCudpp);
     
     free( h_idata);
     free( h_odata);
