@@ -8,3 +8,6 @@ gcc (GCC) 4.4.2
 Cuda compilation tools, release 4.0, V0.2.1221
 Built on Sun_Mar_20_16:45:27_PDT_2011
 }}}
+
+= r188, -all -iteration=1 =
+Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) [JDO, Thu Jul 14]
