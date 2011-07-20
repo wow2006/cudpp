@@ -1,0 +1,105 @@
+#labels Phase-Deploy
+#instructions and examples of using CMake to build CUDPP
+
+Note this applies to CUDPP 2.0 and later only.
+
+= Introduction =
+
+Eventually this will include complete instructions.  FOr now, we have some transcripts.
+
+= Windows Transcript =
+
+The following shows a transcript of generating an [http://www.vtk.org/Wiki/CMake_FAQ#Out-of-source_build_trees out-of-source build tree] for CUDPP. 
+
+{{{
+C:\src>mkdir cudpp_test
+
+C:\src>cd cudpp_test
+
+C:\src\cudpp_test>cmake -i ../cudpp/trunk
+Would you like to see advanced options? [No]:
+Please wait while cmake processes CMakeLists.txt files....
+
+-- Building for: Visual Studio 9 2008
+
+
+Variable Name: BUILD_APPLICATIONS
+Description: If on, builds the sample applications.
+Current Value: OFF
+New Value (Enter to keep current value): ON
+
+Variable Name: BUILD_SHARED_LIBS
+Description: On to build shared libraries, off for static libraries.
+Current Value: OFF
+New Value (Enter to keep current value): ON
+
+Variable Name: CMAKE_INSTALL_PREFIX
+Description: Install path prefix, prepended onto install directories.
+Current Value: C:/Program Files (x86)/cudpp
+New Value (Enter to keep current value): c:/temp/cudpp
+
+Variable Name: CUDA_BUILD_CUBIN
+Description: Generate and parse .cubin files in Device mode.
+Current Value: OFF
+New Value (Enter to keep current value):
+
+Variable Name: CUDA_BUILD_EMULATION
+Description: Build in Emulation mode
+Current Value: OFF
+New Value (Enter to keep current value):
+
+Variable Name: CUDA_SDK_ROOT_DIR
+Description: Path to a file.
+Current Value: CUDA_SDK_ROOT_DIR-NOTFOUND
+New Value (Enter to keep current value):
+
+Variable Name: CUDA_TOOLKIT_ROOT_DIR
+Description: Toolkit location.
+Current Value: C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v4.0
+New Value (Enter to keep current value):
+
+Variable Name: CUDA_VERBOSE_BUILD
+Description: Print out the commands run while compiling the CUDA source file.  W
+ith the Makefile generator this defaults to VERBOSE variable specified on the co
+mmand line, but can be forced on with this option.
+Current Value: OFF
+New Value (Enter to keep current value): ON
+
+Variable Name: CUDA_VERBOSE_PTXAS
+Description: On to enable verbose output from the PTXAS assembler.
+Current Value: OFF
+New Value (Enter to keep current value): ON
+
+Variable Name: EXECUTABLE_OUTPUT_PATH
+Description: Directory where all executables will be stored
+Current Value: C:/src/cudpp_test/bin
+New Value (Enter to keep current value):
+
+Variable Name: LIBRARY_OUTPUT_PATH
+Description: Directory where all the libraries will be stored
+Current Value: C:/src/cudpp_test/lib
+New Value (Enter to keep current value):
+
+Please wait while cmake processes CMakeLists.txt files....
+
+
+
+Variable Name: GLEW_INCLUDE_PATH
+Description: The directory where GL/glew.h resides
+Current Value: C:/src/cudpp/trunk/apps/common/include
+New Value (Enter to keep current value):
+
+Variable Name: GLEW_LIBRARY
+Description: The GLEW library
+Current Value: C:/src/cudpp/trunk/apps/common/lib/glew32.lib
+New Value (Enter to keep current value):
+
+Please wait while cmake processes CMakeLists.txt files....
+
+
+
+CMake complete, run make to build project.
+
+}}}
+
+On Windows, rather than running make, you just open the generated cudpp.sln in your source directory.
