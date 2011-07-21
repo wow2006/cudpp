@@ -25,7 +25,7 @@ Then press "Configure".  You will see a list of options you can set. Click "Adva
 
 Once you have set the necessary options (see below), click "Generate" to generate makefiles.
 
-Go to the directory you set in "Where to build the binaries", and run make (*nix), or open the cudpp.sln (Windows).
+Go to the directory you set in "Where to build the binaries", and run make (`*`nix), or open the cudpp.sln (Windows).
 
 == Options ==
 
