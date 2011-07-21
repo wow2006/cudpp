@@ -5,11 +5,44 @@ Note this applies to CUDPP 2.0 and later only.
 
 = Introduction =
 
-Eventually this will include complete instructions.  FOr now, we have some transcripts.
+To generate makefiles for OS X or Linux, or MS Visual Studio files for Windows, you can either run cmake at the command line or launch cmake-gui.  
 
-= Windows Transcript =
+== Command Line ==
 
-The following shows a transcript of generating an [http://www.vtk.org/Wiki/CMake_FAQ#Out-of-source_build_trees out-of-source build tree] for CUDPP. 
+{{{cmake <path to CUDPP source tree>}}}.  
+
+If the current directory is the CUDPP source tree, you will perform an in-source build, which can clutter up the source tree with intermediate files and cmake scripts.  It is preferable to  run cmake from a different directory outside the source tree, known as an [http://www.vtk.org/Wiki/CMake_FAQ#Out-of-source_build_trees out-of-source build].
+
+If you need to set any options for the build script/makefile generation, you can run cmake interactively with "cmake -i <path to CUDPP source tree>". 
+
+== cmake-gui ==
+
+The cmake gui can be used to interactively configure and generate CUDPP build files.  Just run cmake-gui, then set the path to the CUDPP source tree in the field "Where is the source code", and set the path to where you want the build files generated in "Where to build the binaries".
+
+Then press "Configure".  You will see a list of options you can set. Click "Advanced" to see advanced options.  Click "grouped" to logically group them.
+
+Once you have set the necessary options (see below), click "Generate" to generate makefiles.
+
+Go to the directory you set in "Where to build the binaries", and run make (*nix), or open the cudpp.sln (Windows).
+
+== Options ==
+
+Useful options to set:
+  * CMAKE_BUILD_TYPE: set to Debug for debug builds, Release (or blank) for release builds.  Not needed on Windows.
+  * BUILD_APPLICATIONS: set to on to build the CUDPP example applications and testrig in addition to CUDPP libraries.
+  * BUILD_SHARED_LIBS: set to on to build dynamic/shared CUDPP libraries, off to build static libraries
+  * CUDA_VERBOSE_BUILD: Print out commands run while compiling CUDA source files
+  * CUDA_VERBOSE_PTXAS: Print out the output of --ptxas-options=-verbose, which displays details of shared memory, registers, and constants used by CUDA device kernels.
+  
+=== Debug vs. Release builds ===
+
+The default cmake build is release.  To generate debug CUDPP libraries, use
+
+cmake -DCMAKE_BUILD_TYPE=Debug
+
+= Example cmake interactive transcript =
+
+The following shows a transcript of generating an [http://www.vtk.org/Wiki/CMake_FAQ#Out-of-source_build_trees out-of-source build tree] for CUDPP on Windows 7.
 
 {{{
 C:\src>mkdir cudpp_test
