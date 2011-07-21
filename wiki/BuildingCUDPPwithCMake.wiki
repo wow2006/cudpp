@@ -13,7 +13,9 @@ To generate makefiles for OS X or Linux, or MS Visual Studio files for Windows, 
 
 If the current directory is the CUDPP source tree, you will perform an in-source build, which can clutter up the source tree with intermediate files and cmake scripts.  It is preferable to  run cmake from a different directory outside the source tree, known as an [http://www.vtk.org/Wiki/CMake_FAQ#Out-of-source_build_trees out-of-source build].
 
-If you need to set any options for the build script/makefile generation, you can run cmake interactively with "cmake -i <path to CUDPP source tree>". 
+If you need to set any options for the build script/makefile generation, you can run cmake interactively with the following command.
+
+{{{cmake -i <path to CUDPP source tree>}}}
 
 == cmake-gui ==
 
