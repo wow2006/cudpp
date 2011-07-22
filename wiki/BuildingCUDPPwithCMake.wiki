@@ -1,5 +1,5 @@
+#summary Instructions and Examples of building CUDPP with CMake
 #labels Phase-Deploy
-#instructions and examples of using CMake to build CUDPP
 
 Note this applies to CUDPP 2.0 and later only.
 
