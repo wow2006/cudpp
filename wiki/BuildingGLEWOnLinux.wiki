@@ -1,4 +1,5 @@
 #summary Building GLEW on Linux with no admin privileges (for use in CUDPP)
+#labels Phase-Deploy
 
   # Fetch the GLEW sources from Sourceforge. I was not able to get either the git or the zip file sources to work (I think there were line feed issues), so I used the .tgz. (glew-1.6.0.tgz)
   # Unzip, untar, cd into the directory, make. For me this is in ~/glew; inside there's ~/glew/include and ~/glew/lib.
