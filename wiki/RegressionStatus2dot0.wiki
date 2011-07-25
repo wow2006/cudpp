@@ -2,7 +2,7 @@
 #labels Phase-QA
 
 = r181, -all -iterations=1 =
-Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) [JDO, Fri Jul 8]
+Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) (JDO, Fri Jul 8)
 {{{
 Linux dirac46 2.6.18-194.11.3.el5n-perf #1 SMP Thu Sep 16 15:26:59 PDT 2010 x86_64 x86_64 x86_64 GNU/Linux
 gcc (GCC) 4.4.2
@@ -11,7 +11,7 @@ Built on Sun_Mar_20_16:45:27_PDT_2011
 }}}
 
 = r188, -all -iterations=1 =
-Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) [JDO, Thu Jul 14]
+Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) (JDO, Thu Jul 14)
 
 = r230, -all -iterations=1 =
-Passes on Win7 x64 4GB, GTX 480, CUDA 4.0, 275.33 display driver
+Passes on Win7 x64 4GB, GTX 480, CUDA 4.0, 275.33 display driver (MJH, Mon Jul 25)
