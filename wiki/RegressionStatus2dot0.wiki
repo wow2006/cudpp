@@ -14,4 +14,4 @@ Built on Sun_Mar_20_16:45:27_PDT_2011
 Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) [JDO, Thu Jul 14]
 
 = r230, -all -iterations=1 =
-Passes on Win7 x64 4GB, GTX 480
+Passes on Win7 x64 4GB, GTX 480, CUDA 4.0, 275.33 display driver
