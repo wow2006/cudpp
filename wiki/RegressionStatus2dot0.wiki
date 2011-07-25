@@ -18,3 +18,4 @@ Passes on Win7 x64 4GB, GTX 480, CUDA 4.0, 275.33 display driver (MJH, Mon Jul 2
 
 = r235, -all -iterations=1 =
 Passes on Dirac/Fermi (JDO, Mon Jul 25)
+Passes on MacBook Pro / GF220 (JDO, Mon Jul 25)
