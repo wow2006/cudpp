@@ -25,3 +25,18 @@ Darwin nanaimo-bar.local 11.0.0 Darwin Kernel Version 11.0.0: Sat Jun 18 12:56:3
 i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2335.15.00)
 Cuda compilation tools, release 4.0, V0.2.1221
 }}}
+
+= r243, -all -iterations=1 =
+cudpp_testrig passes on CentOS Linux x64, M2070, but cudpp_hash_testrig doesn't run.
+
+[mharris@compute-0-4 bin]$ uname -a
+Linux compute-0-4.local 2.6.18-128.1.14.el5 #1 SMP Wed Jun 17 06:38:05 EDT 2009 x86_64 x86_64 x86_64 GNU/Linux
+
+[mharris@compute-0-4 bin]$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2011 NVIDIA Corporation
+Built on Thu_May_12_11:09:45_PDT_2011
+Cuda compilation tools, release 4.0, V0.2.1221
+
+[mharris@compute-0-4 bin]$ gcc --version
+gcc (GCC) 4.1.2 20080704 (Red Hat 4.1.2-44)
