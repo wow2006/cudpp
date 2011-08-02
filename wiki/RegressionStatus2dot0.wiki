@@ -2,6 +2,10 @@
 #labels Phase-QA
 # please enter latest results at the TOP of this file.
 
+= r257, -all -iterations=1 =
+cudpp_testrig passes on Dirac/Fermi (Linux, C2050) (JDO)
+cudpp_hash_testrig passes on Dirac/Fermi (Linux, C2050) (JDO)
+
 = r256, -all -iterations=1 =
 cudpp_testrig passes on Win7 x64, GeForce GTX 480.
 
