@@ -1,30 +1,9 @@
 #summary Regression status for 2.0
 #labels Phase-QA
+# please enter latest results at the TOP of this file.
 
-= r181, -all -iterations=1 =
-Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) (JDO, Fri Jul 8)
-{{{
-Linux dirac46 2.6.18-194.11.3.el5n-perf #1 SMP Thu Sep 16 15:26:59 PDT 2010 x86_64 x86_64 x86_64 GNU/Linux
-gcc (GCC) 4.4.2
-Cuda compilation tools, release 4.0, V0.2.1221
-Built on Sun_Mar_20_16:45:27_PDT_2011
-}}}
-
-= r188, -all -iterations=1 =
-Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) (JDO, Thu Jul 14)
-
-= r230, -all -iterations=1 =
-Passes on Win7 x64 4GB, GTX 480, CUDA 4.0, 275.33 display driver (MJH, Mon Jul 25)
-
-= r235, -all -iterations=1 =
-Passes on Dirac/Fermi and Dirac/Tesla (JDO, Mon Jul 25)
-
-Passes on !MacBook Pro "nanaimo-bar" / OS X Lion / GF220 (JDO, Mon Jul 25)
-{{{
-Darwin nanaimo-bar.local 11.0.0 Darwin Kernel Version 11.0.0: Sat Jun 18 12:56:35 PDT 2011; root:xnu-1699.22.73~1/RELEASE_X86_64 x86_64
-i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2335.15.00)
-Cuda compilation tools, release 4.0, V0.2.1221
-}}}
+= r256, -all -iterations=1 =
+cudpp_testrig passes on Win7 x64, GeForce GTX 480.
 
 = r243, -all -iterations=1 =
 cudpp_testrig passes on CentOS Linux x64, M2070, but cudpp_hash_testrig doesn't run.
@@ -40,3 +19,28 @@ Cuda compilation tools, release 4.0, V0.2.1221
 
 [mharris@compute-0-4 bin]$ gcc --version
 gcc (GCC) 4.1.2 20080704 (Red Hat 4.1.2-44)
+
+= r235, -all -iterations=1 =
+Passes on Dirac/Fermi and Dirac/Tesla (JDO, Mon Jul 25)
+
+Passes on !MacBook Pro "nanaimo-bar" / OS X Lion / GF220 (JDO, Mon Jul 25)
+{{{
+Darwin nanaimo-bar.local 11.0.0 Darwin Kernel Version 11.0.0: Sat Jun 18 12:56:35 PDT 2011; root:xnu-1699.22.73~1/RELEASE_X86_64 x86_64
+i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2335.15.00)
+Cuda compilation tools, release 4.0, V0.2.1221
+}}}
+
+= r230, -all -iterations=1 =
+Passes on Win7 x64 4GB, GTX 480, CUDA 4.0, 275.33 display driver (MJH, Mon Jul 25)
+
+= r188, -all -iterations=1 =
+Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) (JDO, Thu Jul 14)
+
+= r181, -all -iterations=1 =
+Passes on Dirac/Tesla (C1060 4 GB) and Dirac/Fermi (C2050 3 GB) (JDO, Fri Jul 8)
+{{{
+Linux dirac46 2.6.18-194.11.3.el5n-perf #1 SMP Thu Sep 16 15:26:59 PDT 2010 x86_64 x86_64 x86_64 GNU/Linux
+gcc (GCC) 4.4.2
+Cuda compilation tools, release 4.0, V0.2.1221
+Built on Sun_Mar_20_16:45:27_PDT_2011
+}}}
