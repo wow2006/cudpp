@@ -2,6 +2,9 @@
 #labels Phase-QA
 # please enter latest results at the TOP of this file.
 
+= r265, -all -iterations=1 =
+cudpp_testrig passes on OS X Lion / CUDA 4.0 / GT330M (JDO)
+
 = r257, -all -iterations=1 =
 cudpp_testrig passes on Dirac/Fermi (Linux x64, C2050) (JDO)
 
