@@ -3,7 +3,11 @@
 # please enter latest results at the TOP of this file.
 
 = r267 -all -iterations=1 =
-cudpp_testrig passes on Windows 7 / CUDA 4.0 / GTX 480 and Quadro FX 4800
+cudpp_testrig and cudpp_hash_testrig pass on Windows 7 / CUDA 4.0 / GTX 480 and Quadro FX 4800
+
+cudpp_testrig and cudpp_hash_testrig pass on CentOS Linux x64 / CUDA 4.0 / Tesla C2050
+
+cudpp_testrig passes all except cudppRand on Mac OS 10.6.8 / CUDA 4.0 / Quadro FX 4800
 
 = r265, -all -iterations=1 =
 cudpp_testrig passes on OS X Lion / CUDA 4.0 / GT330M (JDO)
